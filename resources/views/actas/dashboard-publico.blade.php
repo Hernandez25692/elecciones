@@ -325,12 +325,21 @@
                         </div>
                     </div>
                 </div>
+
+                @php
+                    $validos = intval($totalesGeneral->nacional ?? 0)
+                        + intval($totalesGeneral->liberal ?? 0)
+                        + intval($totalesGeneral->libre ?? 0)
+                        + intval($totalesGeneral->dc ?? 0)
+                        + intval($totalesGeneral->pinu ?? 0);
+
+                    $nulosBlancos = intval($totalesGeneral->nulos ?? 0) + intval($totalesGeneral->blancos ?? 0);
+                    $totalGeneral = $validos + $nulosBlancos;
+                    $porcentajeValidos = $totalGeneral > 0 ? round(($validos / $totalGeneral) * 100, 1) : 0;
+                @endphp
+
                 <div id="votosValidos" class="stat-number mb-2">
-                    {{ intval($totalesGeneral->nacional ?? 0) +
-                        intval($totalesGeneral->liberal ?? 0) +
-                        intval($totalesGeneral->libre ?? 0) +
-                        intval($totalesGeneral->dc ?? 0) +
-                        intval($totalesGeneral->pinu ?? 0) }}
+                    {{ $porcentajeValidos }}%
                 </div>
                 <div class="text-sm text-gray-400 flex items-center gap-2">
                     <i class="fas fa-users text-blue-400"></i>
@@ -351,13 +360,17 @@
                         </div>
                     </div>
                 </div>
+
+                @php
+                    $porcentajeNulos = $totalGeneral > 0 ? round(($nulosBlancos / $totalGeneral) * 100, 1) : 0;
+                @endphp
+
                 <div id="nulosBlancos" class="stat-number mb-2">
-                    {{ intval($totalesGeneral->nulos ?? 0) + intval($totalesGeneral->blancos ?? 0) }}
+                    {{ $porcentajeNulos }}%
                 </div>
                 <div class="text-sm text-gray-400 flex items-center gap-2">
                     <i class="fas fa-chart-pie text-purple-400"></i>
-                    <span>{{ round(((intval($totalesGeneral->nulos ?? 0) + intval($totalesGeneral->blancos ?? 0)) / (intval($totalesGeneral->nacional ?? 0) + intval($totalesGeneral->liberal ?? 0) + intval($totalesGeneral->libre ?? 0) + intval($totalesGeneral->dc ?? 0) + intval($totalesGeneral->pinu ?? 0) + intval($totalesGeneral->nulos ?? 0) + intval($totalesGeneral->blancos ?? 0))) * 100, 1) }}%
-                        del total</span>
+                    <span>{{ $porcentajeNulos }}% del total</span>
                 </div>
             </div>
         </div>
@@ -438,10 +451,19 @@
                 (parseInt(g.dc ?? 0)) +
                 (parseInt(g.pinu ?? 0));
 
-            document.getElementById("votosValidos").textContent = validos;
+            let nulosBlancos = (parseInt(g.nulos ?? 0)) + (parseInt(g.blancos ?? 0));
+            let totalGeneral = validos + nulosBlancos;
 
-            document.getElementById("nulosBlancos").textContent =
-                (parseInt(g.nulos ?? 0)) + (parseInt(g.blancos ?? 0));
+            // Actualizar tarjetas como porcentajes
+            const porcentajeValidos = totalGeneral > 0 ? parseFloat(((validos / totalGeneral) * 100).toFixed(1)) : 0;
+            const porcentajeNulos = totalGeneral > 0 ? parseFloat(((nulosBlancos / totalGeneral) * 100).toFixed(1)) : 0;
+
+            document.getElementById("votosValidos").textContent = `${porcentajeValidos}%`;
+            document.getElementById("nulosBlancos").textContent = `${porcentajeNulos}%`;
+
+            // actualizar texto de "del total" si lo deseas dinámico: (opcional)
+            // const spanDelTotal = document.querySelector('#nulosBlancos + .text-sm span');
+            // if (spanDelTotal) spanDelTotal.textContent = `${porcentajeNulos}% del total`;
 
             actualizarGraficas(data);
             actualizarResumen(data.general);
@@ -469,11 +491,16 @@
                 pinu: ["PINU", "from-cyan-500 to-cyan-600", "#06b6d4"]
             };
 
+            // valorTotal (suma total de los valores en 'data')
+            let valorTotal = Object.values(data)
+                .reduce((acc, x) => acc + (parseInt(x) || 0), 0);
+
             ordenar(data).forEach(([key, valor], index) => {
                 const party = partidos[key];
+                const porcentaje = valorTotal > 0 ? ((valor / valorTotal) * 100).toFixed(1) : 0;
                 cont.innerHTML += `
                     <div class="text-center p-6 rounded-2xl bg-gradient-to-br ${party[1]} border border-white/10 shadow-lg transform transition-transform hover:scale-105">
-                        <div class="text-3xl font-black text-white mb-2 drop-shadow-lg">${valor}</div>
+                        <div class="text-3xl font-black text-white mb-2 drop-shadow-lg">${porcentaje}%</div>
                         <div class="text-white/90 font-semibold text-sm mb-1">${party[0]}</div>
                         <div class="text-white/70 text-xs">Posición #${index + 1}</div>
                     </div>
@@ -487,10 +514,13 @@
             let ordP = ordenar(data.presidente);
 
             let labelsA = ordA.map(i => i[0].toUpperCase());
-            let valoresA = ordA.map(i => i[1]);
+            // reemplazo: pasar a porcentajes por grupo
+            let totalA = ordA.reduce((acc, v) => acc + (parseInt(v[1]) || 0), 0);
+            let valoresA = ordA.map(i => totalA > 0 ? parseFloat(((i[1] / totalA) * 100).toFixed(1)) : 0);
 
             let labelsP = ordP.map(i => i[0].toUpperCase());
-            let valoresP = ordP.map(i => i[1]);
+            let totalP = ordP.reduce((acc, v) => acc + (parseInt(v[1]) || 0), 0);
+            let valoresP = ordP.map(i => totalP > 0 ? parseFloat(((i[1] / totalP) * 100).toFixed(1)) : 0);
 
             // COLORES
             let colores = {
@@ -523,7 +553,13 @@
                         borderColor: 'rgba(255, 255, 255, 0.2)',
                         borderWidth: 1,
                         cornerRadius: 12,
-                        displayColors: true
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                let v = context.parsed.y;
+                                return `${v}%`;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -536,6 +572,9 @@
                             color: '#94a3b8',
                             font: {
                                 weight: '600'
+                            },
+                            callback: function(value) {
+                                return value + '%';
                             }
                         }
                     },
@@ -561,10 +600,10 @@
                 data: {
                     labels: labelsA,
                     datasets: [{
-                        label: "Votos Alcalde",
+                        label: "Votos Alcalde (%)",
                         data: valoresA,
                         backgroundColor: labelsA.map(l => colores[l]),
-                        borderColor: labelsA.map(l => colores[l].replace('0.8', '1')),
+                        borderColor: labelsA.map(l => colores[l] ? colores[l].replace('0.8', '1') : 'rgba(255,255,255,1)'),
                         borderWidth: 2,
                         borderRadius: 8,
                         borderSkipped: false,
@@ -581,10 +620,10 @@
                 data: {
                     labels: labelsP,
                     datasets: [{
-                        label: "Votos Presidente",
+                        label: "Votos Presidente (%)",
                         data: valoresP,
                         backgroundColor: labelsP.map(l => colores[l]),
-                        borderColor: labelsP.map(l => colores[l].replace('0.8', '1')),
+                        borderColor: labelsP.map(l => colores[l] ? colores[l].replace('0.8', '1') : 'rgba(255,255,255,1)'),
                         borderWidth: 2,
                         borderRadius: 8,
                         borderSkipped: false,
