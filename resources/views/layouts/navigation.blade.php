@@ -17,7 +17,7 @@
                     {{-- Dashboard --}}
                     <a href="{{ route('dashboard') }}"
                         class="hover:text-[#A4D2FF] {{ request()->routeIs('dashboard') ? 'text-[#A4D2FF] underline underline-offset-4' : '' }}">
-                        Dashboard
+                        INICIO
                     </a>
 
                     {{-- Registrar Acta --}}
@@ -33,21 +33,29 @@
                         </a>
                     @endif
 
-                   
+
 
                     {{-- Dashboard Electoral interno --}}
-                    @if (in_array(auth()->user()->role, ['admin', 'digitador']))
+                    @if (in_array(auth()->user()->role, ['admin']))
                         <a href="{{ route('dashboard.electoral') }}"
                             class="hover:text-[#A4D2FF] {{ request()->routeIs('dashboard.electoral') ? 'text-[#A4D2FF] underline underline-offset-4' : '' }}">
                             Dashboard Electoral
                         </a>
                     @endif
-
-                    {{-- Dashboard Público --}}
-                    <a href="{{ route('dashboard.electoral.publico') }}"
-                        class="hover:text-[#A4D2FF] {{ request()->routeIs('dashboard.electoral.publico') ? 'text-[#A4D2FF] underline underline-offset-4' : '' }}">
-                        Dashboard Público
-                    </a>
+                    @if (in_array(auth()->user()->role, ['admin']))
+                        {{-- Dashboard Público --}}
+                        <a href="{{ route('dashboard.electoral.publico') }}"
+                            class="hover:text-[#A4D2FF] {{ request()->routeIs('dashboard.electoral.publico') ? 'text-[#A4D2FF] underline underline-offset-4' : '' }}">
+                            Dashboard Público
+                        </a>
+                    @endif
+                    @auth
+                        @if (auth()->user()->role === 'admin')
+                            <x-nav-link :href="route('register.form')" :active="request()->routeIs('register.form')">
+                                Registrar Usuario
+                            </x-nav-link>
+                        @endif
+                    @endauth
 
                 </div>
             </div>
