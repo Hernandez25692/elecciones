@@ -5,8 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ActaController;
 use App\Http\Controllers\MesaController;
 
-Route::get('/publico/dashboard-electoral', [ActaController::class, 'public'])
-    ->name('dashboard.electoral.publico');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/publico/dashboard-electoral', [ActaController::class, 'public'])
+        ->name('dashboard.electoral.publico');
+});
 
 Route::middleware(['auth'])->group(function () {
 
@@ -57,7 +59,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // PERFIL DEL USUARIO ACTUAL
 Route::middleware(['auth'])->group(function () {
-    
+
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
 

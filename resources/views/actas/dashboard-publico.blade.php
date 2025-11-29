@@ -243,6 +243,11 @@
         }
     </style>
 </head>
+@php
+    if (!auth()->check() || auth()->user()->role !== 'admin') {
+        abort(403, 'Acceso denegado — Solo para administradores.');
+    }
+@endphp
 
 <body class="text-gray-100">
     <!-- Floating Background Elements -->
@@ -274,7 +279,7 @@
             </h1>
 
             <p class="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                Resultados en tiempo real del proceso electoral 
+                Resultados en tiempo real del proceso electoral
                 <span class="block text-sm mt-2 text-cyan-400" id="lastUpdate"></span>
             </p>
         </div>
@@ -300,7 +305,7 @@
                 </div>
                 <div class="text-sm text-gray-400 flex items-center gap-2">
                     <i class="fas fa-trend-up text-green-400"></i>
-                    
+
                 </div>
                 <svg class="progress-ring" viewBox="0 0 200 200">
                     <circle cx="100" cy="100" r="95"></circle>
