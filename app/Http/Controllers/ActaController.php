@@ -228,6 +228,42 @@ class ActaController extends Controller
             ->orderBy('created_at', 'DESC')
             ->limit(10)
             ->get();
+        // ==========================
+        // PORCENTAJES ALCALDE
+        // ==========================
+        $totalAlcaldeVotos =
+            $totalesAlcalde->nacional +
+            $totalesAlcalde->liberal +
+            $totalesAlcalde->libre +
+            $totalesAlcalde->dc +
+            $totalesAlcalde->pinu;
+
+        $porcentajeAlcalde = [
+            'nacional' => $totalAlcaldeVotos ? round(($totalesAlcalde->nacional / $totalAlcaldeVotos) * 100, 2) : 0,
+            'liberal'  => $totalAlcaldeVotos ? round(($totalesAlcalde->liberal  / $totalAlcaldeVotos) * 100, 2) : 0,
+            'libre'    => $totalAlcaldeVotos ? round(($totalesAlcalde->libre    / $totalAlcaldeVotos) * 100, 2) : 0,
+            'dc'       => $totalAlcaldeVotos ? round(($totalesAlcalde->dc       / $totalAlcaldeVotos) * 100, 2) : 0,
+            'pinu'     => $totalAlcaldeVotos ? round(($totalesAlcalde->pinu     / $totalAlcaldeVotos) * 100, 2) : 0,
+        ];
+
+
+        // ==========================
+        // PORCENTAJES PRESIDENTE
+        // ==========================
+        $totalPresidenteVotos =
+            $totalesPresidente->nacional +
+            $totalesPresidente->liberal +
+            $totalesPresidente->libre +
+            $totalesPresidente->dc +
+            $totalesPresidente->pinu;
+
+        $porcentajePresidente = [
+            'nacional' => $totalPresidenteVotos ? round(($totalesPresidente->nacional / $totalPresidenteVotos) * 100, 2) : 0,
+            'liberal'  => $totalPresidenteVotos ? round(($totalesPresidente->liberal  / $totalPresidenteVotos) * 100, 2) : 0,
+            'libre'    => $totalPresidenteVotos ? round(($totalesPresidente->libre    / $totalPresidenteVotos) * 100, 2) : 0,
+            'dc'       => $totalPresidenteVotos ? round(($totalesPresidente->dc       / $totalPresidenteVotos) * 100, 2) : 0,
+            'pinu'     => $totalPresidenteVotos ? round(($totalesPresidente->pinu     / $totalPresidenteVotos) * 100, 2) : 0,
+        ];
 
 
         return view('actas.dashboard', [
@@ -235,6 +271,8 @@ class ActaController extends Controller
             'totalesGeneral'    => $totalesGeneral,
             'totalesAlcalde'    => $totalesAlcalde,
             'totalesPresidente' => $totalesPresidente,
+            'porcentajeAlcalde' => $porcentajeAlcalde,
+            'porcentajePresidente' => $porcentajePresidente,
             'actas'             => $actas
         ]);
     }
