@@ -90,9 +90,34 @@
                         <p class="text-sm text-gray-400 dark:text-gray-500">Conteo total de votos válidos registrados
                         </p>
                         <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                            @php
+                                $totalVotos =
+                                    $totalesGeneral->nacional +
+                                    $totalesGeneral->liberal +
+                                    $totalesGeneral->libre +
+                                    $totalesGeneral->dc +
+                                    $totalesGeneral->pinu +
+                                    $totalesGeneral->nulos +
+                                    $totalesGeneral->blancos;
+
+                                $totalValidos =
+                                    $totalesGeneral->nacional +
+                                    $totalesGeneral->liberal +
+                                    $totalesGeneral->libre +
+                                    $totalesGeneral->dc +
+                                    $totalesGeneral->pinu;
+
+                                $porcentajeValidos = $totalVotos > 0 ? round(($totalValidos / $totalVotos) * 100, 1) : 0;
+                            @endphp
+
                             <div class="flex items-center gap-2 text-xs text-green-600 font-semibold">
                                 <i class="fas fa-trending-up"></i>
                                 <span>Ingresadas</span>
+                            </div>
+
+                            <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
+                                <span>Porcentaje del total</span>
+                                <span class="font-semibold text-green-600">{{ $porcentajeValidos }}%</span>
                             </div>
                         </div>
                     </div>
@@ -339,7 +364,7 @@
                                                         class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">
                                                         {{ substr($a->mesa->codigo, -3) }}
                                                     </div>
-                                                    {{ $a->mesa->codigo }}
+                                                    
                                                 </div>
                                             </td>
                                             <td class="py-4 px-4">
