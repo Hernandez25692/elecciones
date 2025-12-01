@@ -55,9 +55,9 @@
                         <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                             <div class="flex items-center justify-between text-xs text-gray-500">
                                 <span>Ingresadas</span>
-                                
+
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -107,7 +107,8 @@
                                     $totalesGeneral->dc +
                                     $totalesGeneral->pinu;
 
-                                $porcentajeValidos = $totalVotos > 0 ? round(($totalValidos / $totalVotos) * 100, 1) : 0;
+                                $porcentajeValidos =
+                                    $totalVotos > 0 ? round(($totalValidos / $totalVotos) * 100, 1) : 0;
                             @endphp
 
                             <div class="flex items-center gap-2 text-xs text-green-600 font-semibold">
@@ -171,6 +172,69 @@
                     </div>
                 </div>
 
+                {{-- MESAS ALCALDE --}}
+                <div class="group relative">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-300">
+                    </div>
+                    <div
+                        class="relative p-6 rounded-2xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 transform transition-all duration-300 group-hover:scale-105">
+
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-landmark text-green-600 dark:text-green-400 text-xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-500 dark:text-gray-300 font-semibold text-sm uppercase tracking-wide">
+                            Mesas Alcalde
+                        </p>
+
+                        <h1 class="text-5xl font-black text-green-600 dark:text-green-400 mt-2 mb-2">
+                            {{ $mesasAlcalde }}
+                        </h1>
+
+                        <p class="text-sm text-gray-400 dark:text-gray-500">Total de mesas para alcalde escrutadas</p>
+                    </div>
+                </div>
+
+
+                {{-- MESAS PRESIDENTE --}}
+                <div class="group relative">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-300">
+                    </div>
+                    <div
+                        class="relative p-6 rounded-2xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 transform transition-all duration-300 group-hover:scale-105">
+
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-flag text-blue-600 dark:text-blue-400 text-xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-500 dark:text-gray-300 font-semibold text-sm uppercase tracking-wide">
+                            Mesas Presidente
+                        </p>
+
+                        <h1 class="text-5xl font-black text-blue-600 dark:text-blue-400 mt-2 mb-2">
+                            {{ $mesasPresidente }}
+                        </h1>
+
+                        <p class="text-sm text-gray-400 dark:text-gray-500">Total de mesas para presidente escrutadas
+                        </p>
+                    </div>
+                </div>
+
+
             </div>
 
             {{-- Sección título --}}
@@ -196,12 +260,14 @@
             <div class="mb-8">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h4 class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                        <h4
+                            class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
                             📈 Gráficas de Barras
                         </h4>
                         <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Comparación de totales por partido</p>
                     </div>
-                    <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-semibold">
+                    <span
+                        class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-semibold">
                         Totales
                     </span>
                 </div>
@@ -209,17 +275,22 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {{-- Alcalde - Barra --}}
                     <div class="group relative">
-                        <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-300"></div>
-                        <div class="relative p-6 rounded-3xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 transform transition-all duration-300 group-hover:scale-[1.02]">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-300">
+                        </div>
+                        <div
+                            class="relative p-6 rounded-3xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 transform transition-all duration-300 group-hover:scale-[1.02]">
                             <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h5 class="text-lg font-bold text-blue-700 dark:text-blue-400 flex items-center gap-3">
+                                    <h5
+                                        class="text-lg font-bold text-blue-700 dark:text-blue-400 flex items-center gap-3">
                                         <i class="fas fa-landmark"></i>
                                         Alcalde — Totales
                                     </h5>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">Votos totales por partido</p>
                                 </div>
-                                <span class="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-semibold">Barras</span>
+                                <span
+                                    class="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-semibold">Barras</span>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
                                 <canvas id="graficaAlcaldeTotales" height="220"></canvas>
@@ -229,17 +300,22 @@
 
                     {{-- Presidente - Barra --}}
                     <div class="group relative">
-                        <div class="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-600 rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-300"></div>
-                        <div class="relative p-6 rounded-3xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 transform transition-all duration-300 group-hover:scale-[1.02]">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-600 rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-300">
+                        </div>
+                        <div
+                            class="relative p-6 rounded-3xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 transform transition-all duration-300 group-hover:scale-[1.02]">
                             <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h5 class="text-lg font-bold text-green-700 dark:text-green-400 flex items-center gap-3">
+                                    <h5
+                                        class="text-lg font-bold text-green-700 dark:text-green-400 flex items-center gap-3">
                                         <i class="fas fa-flag"></i>
                                         Presidente — Totales
                                     </h5>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">Votos totales por partido</p>
                                 </div>
-                                <span class="px-2 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-semibold">Barras</span>
+                                <span
+                                    class="px-2 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-semibold">Barras</span>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
                                 <canvas id="graficaPresidenteTotales" height="220"></canvas>
@@ -253,12 +329,15 @@
             <div class="mb-12">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h4 class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                        <h4
+                            class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
                             🥧 Gráficas Tipo Pastel
                         </h4>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Porcentajes de distribución por partido</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Porcentajes de distribución por
+                            partido</p>
                     </div>
-                    <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-semibold">
+                    <span
+                        class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-semibold">
                         Porcentajes
                     </span>
                 </div>
@@ -266,40 +345,52 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {{-- Alcalde - Pastel --}}
                     <div class="group relative">
-                        <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-3xl blur opacity-15 group-hover:opacity-25 transition duration-300"></div>
-                        <div class="relative p-6 rounded-3xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-3xl blur opacity-15 group-hover:opacity-25 transition duration-300">
+                        </div>
+                        <div
+                            class="relative p-6 rounded-3xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h5 class="text-lg font-bold text-blue-700 dark:text-blue-400 flex items-center gap-3">
+                                    <h5
+                                        class="text-lg font-bold text-blue-700 dark:text-blue-400 flex items-center gap-3">
                                         <i class="fas fa-chart-pie"></i>
                                         Alcalde — Porcentajes
                                     </h5>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">Distribución porcentual</p>
                                 </div>
-                                <span class="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-semibold">Pastel</span>
+                                <span
+                                    class="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-semibold">Pastel</span>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl flex items-center justify-center">
-                                <canvas id="graficaAlcaldePorcentaje" height="220" style="max-width:320px;"></canvas>
+                                <canvas id="graficaAlcaldePorcentaje" height="220"
+                                    style="max-width:320px;"></canvas>
                             </div>
                         </div>
                     </div>
 
                     {{-- Presidente - Pastel --}}
                     <div class="group relative">
-                        <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl blur opacity-15 group-hover:opacity-25 transition duration-300"></div>
-                        <div class="relative p-6 rounded-3xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl blur opacity-15 group-hover:opacity-25 transition duration-300">
+                        </div>
+                        <div
+                            class="relative p-6 rounded-3xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h5 class="text-lg font-bold text-green-700 dark:text-green-400 flex items-center gap-3">
+                                    <h5
+                                        class="text-lg font-bold text-green-700 dark:text-green-400 flex items-center gap-3">
                                         <i class="fas fa-chart-pie"></i>
                                         Presidente — Porcentajes
                                     </h5>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">Distribución porcentual</p>
                                 </div>
-                                <span class="px-2 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-semibold">Pastel</span>
+                                <span
+                                    class="px-2 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-semibold">Pastel</span>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl flex items-center justify-center">
-                                <canvas id="graficaPresidentePorcentaje" height="220" style="max-width:320px;"></canvas>
+                                <canvas id="graficaPresidentePorcentaje" height="220"
+                                    style="max-width:320px;"></canvas>
                             </div>
                         </div>
                     </div>
@@ -364,7 +455,7 @@
                                                         class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">
                                                         {{ substr($a->mesa->codigo, -3) }}
                                                     </div>
-                                                    
+
                                                 </div>
                                             </td>
                                             <td class="py-4 px-4">

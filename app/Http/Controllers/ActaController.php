@@ -180,39 +180,49 @@ class ActaController extends Controller
 
     public function dashboard()
     {
-        // **Mesas procesadas sin duplicar**
+        // Mesas procesadas totales (sin duplicar)
         $mesasProcesadas = Acta::distinct('mesa_id')->count('mesa_id');
+
+        // Mesas AL alcalde (sin duplicar)
+        $mesasAlcalde = Acta::where('nivel', 'alcalde')
+            ->distinct('mesa_id')
+            ->count('mesa_id');
+
+        // Mesas PRESIDENTE (sin duplicar)
+        $mesasPresidente = Acta::where('nivel', 'presidencial')
+            ->distinct('mesa_id')
+            ->count('mesa_id');
 
         // Totales generales
         $totalesGeneral = Acta::selectRaw('
-            SUM(nacional) as nacional,
-            SUM(liberal) as liberal,
-            SUM(libre) as libre,
-            SUM(dc) as dc,
-            SUM(pinu) as pinu,
-            SUM(nulos) as nulos,
-            SUM(blancos) as blancos
-        ')->first();
+        SUM(nacional) as nacional,
+        SUM(liberal) as liberal,
+        SUM(libre) as libre,
+        SUM(dc) as dc,
+        SUM(pinu) as pinu,
+        SUM(nulos) as nulos,
+        SUM(blancos) as blancos
+    ')->first();
 
         // Totales alcalde
         $totalesAlcalde = Acta::where('nivel', 'alcalde')->selectRaw('
-            SUM(nacional) as nacional,
-            SUM(liberal) as liberal,
-            SUM(libre) as libre,
-            SUM(dc) as dc,
-            SUM(pinu) as pinu
-        ')->first();
+        SUM(nacional) as nacional,
+        SUM(liberal) as liberal,
+        SUM(libre) as libre,
+        SUM(dc) as dc,
+        SUM(pinu) as pinu
+    ')->first();
 
         // Totales presidente
         $totalesPresidente = Acta::where('nivel', 'presidencial')->selectRaw('
-            SUM(nacional) as nacional,
-            SUM(liberal) as liberal,
-            SUM(libre) as libre,
-            SUM(dc) as dc,
-            SUM(pinu) as pinu
-        ')->first();
+        SUM(nacional) as nacional,
+        SUM(liberal) as liberal,
+        SUM(libre) as libre,
+        SUM(dc) as dc,
+        SUM(pinu) as pinu
+    ')->first();
 
-        // Últimas 10 actas
+        // Últimas actas
         $actas = Acta::with(['mesa', 'user'])
             ->orderBy('created_at', 'DESC')
             ->limit(10)
@@ -250,8 +260,11 @@ class ActaController extends Controller
             'pinu'     => $totalPresidenteVotos ? round(($totalesPresidente->pinu     / $totalPresidenteVotos) * 100, 2) : 0,
         ];
 
+        // Enviar todo a la vista
         return view('actas.dashboard', [
             'mesasProcesadas'      => $mesasProcesadas,
+            'mesasAlcalde'         => $mesasAlcalde,
+            'mesasPresidente'      => $mesasPresidente,
             'totalesGeneral'       => $totalesGeneral,
             'totalesAlcalde'       => $totalesAlcalde,
             'totalesPresidente'    => $totalesPresidente,
@@ -260,6 +273,7 @@ class ActaController extends Controller
             'actas'                => $actas
         ]);
     }
+
 
     public function public()
     {
