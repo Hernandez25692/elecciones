@@ -81,11 +81,12 @@
                         <p class="text-gray-500 dark:text-gray-300 font-semibold text-sm uppercase tracking-wide">Votos
                             Válidos</p>
                         <h1 class="text-5xl font-black text-green-600 dark:text-green-400 mt-2 mb-2">
-                            {{ $totalesGeneral->nacional +
-                                $totalesGeneral->liberal +
-                                $totalesGeneral->libre +
-                                $totalesGeneral->dc +
-                                $totalesGeneral->pinu }}
+                            {{ $totalesAlcalde->nacional +
+                                $totalesAlcalde->liberal +
+                                $totalesAlcalde->libre +
+                                $totalesAlcalde->dc +
+                                $totalesAlcalde->pinu }}
+
                         </h1>
                         <p class="text-sm text-gray-400 dark:text-gray-500">Conteo total de votos válidos registrados
                         </p>
@@ -143,7 +144,8 @@
                         <p class="text-gray-500 dark:text-gray-300 font-semibold text-sm uppercase tracking-wide">Nulos
                             + Blancos</p>
                         <h1 class="text-5xl font-black text-red-600 dark:text-red-400 mt-2 mb-2">
-                            {{ $totalesGeneral->nulos + $totalesGeneral->blancos }}
+                            {{ $totalesAlcalde->nulos + $totalesAlcalde->blancos }}
+
                         </h1>
                         <p class="text-sm text-gray-400 dark:text-gray-500">Suma de votos no válidos</p>
                         <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
@@ -231,6 +233,35 @@
 
                         <p class="text-sm text-gray-400 dark:text-gray-500">Total de mesas para presidente escrutadas
                         </p>
+                    </div>
+                </div>
+                {{-- COCIENTE --}}
+                <div class="group relative">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-300">
+                    </div>
+
+                    <div
+                        class="relative p-6 rounded-2xl shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 transform transition-all duration-300 group-hover:scale-105">
+
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-divide text-purple-600 dark:text-purple-400 text-xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-500 dark:text-gray-300 font-semibold text-sm uppercase tracking-wide">
+                            Cociente Alcalde</p>
+
+                        <h1 class="text-5xl font-black text-purple-600 dark:text-purple-400 mt-2 mb-2">
+                            {{ number_format($cociente, 2) }}
+                        </h1>
+
+                        <p class="text-sm text-gray-400 dark:text-gray-500">Total votos válidos alcalde ÷ 10</p>
                     </div>
                 </div>
 
