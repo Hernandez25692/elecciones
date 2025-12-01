@@ -253,4 +253,80 @@ class ActaController extends Controller
             'actas' => $actas
         ]);
     }
+
+    public function public()
+    {
+        $mesasProcesadas = Acta::distinct('mesa_id')->count('mesa_id');
+
+        $totalesGeneral = Acta::selectRaw('
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu,
+            SUM(nulos) as nulos,
+            SUM(blancos) as blancos
+        ')->first();
+
+        $totalesAlcalde = Acta::where('nivel', 'alcalde')->selectRaw('
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu
+        ')->first();
+
+        $totalesPresidente = Acta::where('nivel', 'presidencial')->selectRaw('
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu
+        ')->first();
+
+        return view('actas.dashboard-publico', [
+            'mesasProcesadas'   => $mesasProcesadas,
+            'totalesGeneral'    => $totalesGeneral,
+            'totalesAlcalde'    => $totalesAlcalde,
+            'totalesPresidente' => $totalesPresidente
+        ]);
+    }
+
+    public function apiResultados()
+    {
+        $totalesGeneral = Acta::selectRaw('
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu,
+            SUM(nulos) as nulos,
+            SUM(blancos) as blancos
+        ')->first();
+
+        $totalesAlcalde = Acta::where('nivel', 'alcalde')->selectRaw('
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu
+        ')->first();
+
+        $totalesPresidente = Acta::where('nivel', 'presidencial')->selectRaw('
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu
+        ')->first();
+
+        $mesasProcesadas = Acta::distinct('mesa_id')->count('mesa_id');
+
+        return response()->json([
+            'mesasProcesadas' => $mesasProcesadas,
+            'general'         => $totalesGeneral,
+            'alcalde'         => $totalesAlcalde,
+            'presidente'      => $totalesPresidente
+        ]);
+    }
 }
