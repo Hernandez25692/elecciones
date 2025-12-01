@@ -426,7 +426,7 @@
 
         <!-- FOOTER INFORMATIVO -->
         <div class="text-center text-gray-500 text-sm">
-            <p>Sistema de Monitoreo Electoral • Última actualización: <span id="fullLastUpdate"></span></p>
+            <p>Douglas Jesus- Jose Hernandez Sistema de Monitoreo Electoral • Última actualización: <span id="fullLastUpdate"></span></p>
         </div>
     </div>
 

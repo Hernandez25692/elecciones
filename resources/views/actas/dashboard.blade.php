@@ -453,7 +453,7 @@
                                                 <div class="flex items-center gap-3">
                                                     <div
                                                         class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">
-                                                        {{ substr($a->mesa->codigo, -3) }}
+                                                        {{ $a->mesa->codigo }}
                                                     </div>
 
                                                 </div>
