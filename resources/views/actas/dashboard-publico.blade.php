@@ -431,8 +431,14 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 
     <script>
+        // Registrar plugin para mostrar etiquetas siempre
+        if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+            Chart.register(ChartDataLabels);
+        }
+
         // Inicialización gráfica
         let graficaAlcalde, graficaPresidente;
 
@@ -560,6 +566,28 @@
                                 return `${v}%`;
                             }
                         }
+                    },
+                    // plugin datalabels: etiquetas más grandes y resaltadas
+                    datalabels: {
+                        display: true,
+                        color: '#ffffff',
+                        backgroundColor: 'rgba(0, 0, 0, 0.65)', // fondo para resaltar
+                        borderColor: 'rgba(255,255,255,0.12)',
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        padding: 6,
+                        clamp: true,
+                        font: {
+                            weight: '900',
+                            size: 16 // tamaño aumentado
+                        },
+                        formatter: function(value) {
+                            // value ya es porcentaje en nuestros datasets
+                            return value + '%';
+                        },
+                        anchor: 'end', // posicionar sobre el extremo superior de la barra
+                        align: 'end',
+                        offset: -10
                     }
                 },
                 scales: {
@@ -609,7 +637,8 @@
                         borderSkipped: false,
                     }]
                 },
-                options: chartOptions
+                options: chartOptions,
+                plugins: [ChartDataLabels] // asegurar que el plugin se aplique
             });
 
             // Presidente
@@ -629,7 +658,8 @@
                         borderSkipped: false,
                     }]
                 },
-                options: chartOptions
+                options: chartOptions,
+                plugins: [ChartDataLabels]
             });
         }
 
