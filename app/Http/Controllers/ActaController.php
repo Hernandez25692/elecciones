@@ -6,7 +6,6 @@ use App\Models\Acta;
 use App\Models\Mesa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class ActaController extends Controller
 {
@@ -20,29 +19,29 @@ class ActaController extends Controller
     {
         $query = Acta::with(['mesa', 'user'])->orderBy('id', 'DESC');
 
-        // FILTRO por mesa
+        // Filtro por mesa
         if ($request->mesa) {
             $query->whereHas('mesa', function ($q) use ($request) {
                 $q->where('codigo', 'LIKE', "%{$request->mesa}%");
             });
         }
 
-        // FILTRO por nivel
+        // Filtro por nivel
         if ($request->nivel && $request->nivel !== 'todos') {
             $query->where('nivel', $request->nivel);
         }
 
-        // FILTRO por fecha desde
+        // Filtro fecha desde
         if ($request->desde) {
             $query->whereDate('created_at', '>=', $request->desde);
         }
 
-        // FILTRO por fecha hasta
+        // Filtro fecha hasta
         if ($request->hasta) {
             $query->whereDate('created_at', '<=', $request->hasta);
         }
 
-        // BÚSQUEDA GLOBAL
+        // Búsqueda global
         if ($request->buscar) {
             $query->where(function ($q) use ($request) {
                 $q->whereHas('mesa', function ($m) use ($request) {
@@ -60,33 +59,35 @@ class ActaController extends Controller
         return view('actas.index', compact('actas'));
     }
 
-
     public function store(Request $request)
     {
         $request->validate([
             'mesa_codigo' => 'required|string|max:50',
-            'nivel' => 'required|in:alcalde,presidencial',
-            'archivo' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+            'nivel'       => 'required|in:alcalde,presidencial',
+            'archivo'     => 'nullable|file|mimes:jpg,jpeg,png,pdf',
         ]);
 
-        // Buscar mesa
-        $mesa = \App\Models\Mesa::firstOrCreate(
-            ['codigo' => $request->mesa_codigo],
+        // *** NORMALIZAR CÓDIGO DE MESA ***
+        $codigoMesa = trim(strtoupper($request->mesa_codigo));
+
+        // Buscar mesa ya normalizada
+        $mesa = Mesa::firstOrCreate(
+            ['codigo' => $codigoMesa],
             ['centro' => 'Sin definir', 'municipio' => null, 'departamento' => null]
         );
 
-        // VALIDACIÓN ANTI-DUPLICADO DE MESA + NIVEL
+        // Evitar duplicados por nivel
         $actaExistente = Acta::where('mesa_id', $mesa->id)
             ->where('nivel', $request->nivel)
             ->first();
 
         if ($actaExistente) {
             return back()
-                ->with('error', '⚠ Esta mesa ya tiene acta registrada para el nivel seleccionado.')
+                ->with('error', '⚠ Esta mesa ya tiene acta registrada para este nivel.')
                 ->withInput();
         }
 
-        // Guardar archivo si viene
+        // Guardar archivo
         $archivo = $request->hasFile('archivo')
             ? $request->file('archivo')->store('actas', 'public')
             : null;
@@ -95,15 +96,17 @@ class ActaController extends Controller
         Acta::create([
             'user_id' => Auth::id(),
             'mesa_id' => $mesa->id,
-            'nivel' => $request->nivel,
+            'nivel'   => $request->nivel,
             'archivo' => $archivo,
+
             'nacional' => $request->nacional ?? 0,
-            'liberal' => $request->liberal ?? 0,
-            'libre' => $request->libre ?? 0,
-            'dc' => $request->dc ?? 0,
-            'pinu' => $request->pinu ?? 0,
-            'nulos' => $request->nulos ?? 0,
-            'blancos' => $request->blancos ?? 0,
+            'liberal'  => $request->liberal ?? 0,
+            'libre'    => $request->libre ?? 0,
+            'dc'       => $request->dc ?? 0,
+            'pinu'     => $request->pinu ?? 0,
+            'nulos'    => $request->nulos ?? 0,
+            'blancos'  => $request->blancos ?? 0,
+
             'total' => collect([
                 $request->nacional,
                 $request->liberal,
@@ -118,11 +121,9 @@ class ActaController extends Controller
         return back()->with('success', 'Acta registrada correctamente.');
     }
 
-
     public function edit($id)
     {
         $acta = Acta::with('mesa')->findOrFail($id);
-
         return view('actas.edit', compact('acta'));
     }
 
@@ -130,37 +131,38 @@ class ActaController extends Controller
     {
         $request->validate([
             'mesa_codigo' => 'required|string|max:50',
-            'nivel' => 'required|in:alcalde,presidencial',
-            'archivo' => 'nullable|file|mimes:jpg,jpeg,png,pdf',
+            'nivel'       => 'required|in:alcalde,presidencial',
+            'archivo'     => 'nullable|file|mimes:jpg,jpeg,png,pdf',
         ]);
 
         $acta = Acta::findOrFail($id);
 
-        // Buscar o crear mesa
-        $mesa = \App\Models\Mesa::firstOrCreate(
-            ['codigo' => $request->mesa_codigo],
+        // *** NORMALIZAR CÓDIGO DE MESA ***
+        $codigoMesa = trim(strtoupper($request->mesa_codigo));
+
+        // Buscar mesa
+        $mesa = Mesa::firstOrCreate(
+            ['codigo' => $codigoMesa],
             ['centro' => 'Sin definir']
         );
 
-        // Guardar archivo nuevo si viene
+        // Actualizar archivo si viene
         if ($request->hasFile('archivo')) {
-            $archivo = $request->file('archivo')->store('actas', 'public');
-            $acta->archivo = $archivo;
+            $acta->archivo = $request->file('archivo')->store('actas', 'public');
         }
 
-        // Actualizar datos
+        // Actualizar acta
         $acta->mesa_id = $mesa->id;
-        $acta->nivel = $request->nivel;
+        $acta->nivel   = $request->nivel;
 
         $acta->nacional = $request->nacional ?? 0;
-        $acta->liberal = $request->liberal ?? 0;
-        $acta->libre = $request->libre ?? 0;
-        $acta->dc = $request->dc ?? 0;
-        $acta->pinu = $request->pinu ?? 0;
-        $acta->nulos = $request->nulos ?? 0;
-        $acta->blancos = $request->blancos ?? 0;
+        $acta->liberal  = $request->liberal ?? 0;
+        $acta->libre    = $request->libre ?? 0;
+        $acta->dc       = $request->dc ?? 0;
+        $acta->pinu     = $request->pinu ?? 0;
+        $acta->nulos    = $request->nulos ?? 0;
+        $acta->blancos  = $request->blancos ?? 0;
 
-        // Total recalculado
         $acta->total = collect([
             $acta->nacional,
             $acta->liberal,
@@ -178,12 +180,10 @@ class ActaController extends Controller
 
     public function dashboard()
     {
-        // TOTAL DE MESAS PROCESADAS
+        // **Mesas procesadas sin duplicar**
         $mesasProcesadas = Acta::distinct('mesa_id')->count('mesa_id');
 
-        // ============================================================
-        // 1. TOTALES GENERALES (todos los niveles)
-        // ============================================================
+        // Totales generales
         $totalesGeneral = Acta::selectRaw('
             SUM(nacional) as nacional,
             SUM(liberal) as liberal,
@@ -194,43 +194,31 @@ class ActaController extends Controller
             SUM(blancos) as blancos
         ')->first();
 
+        // Totales alcalde
+        $totalesAlcalde = Acta::where('nivel', 'alcalde')->selectRaw('
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu
+        ')->first();
 
-        // ============================================================
-        // 2. TOTALES SOLO ALCALDE
-        // ============================================================
-        $totalesAlcalde = Acta::where('nivel', 'alcalde')
-            ->selectRaw('
-                SUM(nacional) as nacional,
-                SUM(liberal) as liberal,
-                SUM(libre) as libre,
-                SUM(dc) as dc,
-                SUM(pinu) as pinu
-            ')->first();
+        // Totales presidente
+        $totalesPresidente = Acta::where('nivel', 'presidencial')->selectRaw('
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu
+        ')->first();
 
-
-        // ============================================================
-        // 3. TOTALES SOLO PRESIDENTE
-        // ============================================================
-        $totalesPresidente = Acta::where('nivel', 'presidencial')
-            ->selectRaw('
-                SUM(nacional) as nacional,
-                SUM(liberal) as liberal,
-                SUM(libre) as libre,
-                SUM(dc) as dc,
-                SUM(pinu) as pinu
-            ')->first();
-
-
-        // ============================================================
-        // 4. ÚLTIMAS 10 ACTAS
-        // ============================================================
+        // Últimas 10 actas
         $actas = Acta::with(['mesa', 'user'])
             ->orderBy('created_at', 'DESC')
             ->limit(10)
             ->get();
-        // ==========================
-        // PORCENTAJES ALCALDE
-        // ==========================
+
+        // Porcentajes alcalde
         $totalAlcaldeVotos =
             $totalesAlcalde->nacional +
             $totalesAlcalde->liberal +
@@ -246,10 +234,7 @@ class ActaController extends Controller
             'pinu'     => $totalAlcaldeVotos ? round(($totalesAlcalde->pinu     / $totalAlcaldeVotos) * 100, 2) : 0,
         ];
 
-
-        // ==========================
-        // PORCENTAJES PRESIDENTE
-        // ==========================
+        // Porcentajes presidente
         $totalPresidenteVotos =
             $totalesPresidente->nacional +
             $totalesPresidente->liberal +
@@ -265,35 +250,32 @@ class ActaController extends Controller
             'pinu'     => $totalPresidenteVotos ? round(($totalesPresidente->pinu     / $totalPresidenteVotos) * 100, 2) : 0,
         ];
 
-
         return view('actas.dashboard', [
-            'mesasProcesadas'   => $mesasProcesadas,
-            'totalesGeneral'    => $totalesGeneral,
-            'totalesAlcalde'    => $totalesAlcalde,
-            'totalesPresidente' => $totalesPresidente,
-            'porcentajeAlcalde' => $porcentajeAlcalde,
+            'mesasProcesadas'      => $mesasProcesadas,
+            'totalesGeneral'       => $totalesGeneral,
+            'totalesAlcalde'       => $totalesAlcalde,
+            'totalesPresidente'    => $totalesPresidente,
+            'porcentajeAlcalde'    => $porcentajeAlcalde,
             'porcentajePresidente' => $porcentajePresidente,
-            'actas'             => $actas
+            'actas'                => $actas
         ]);
     }
 
     public function public()
     {
-        // Reutilizamos la misma lógica del dashboard
         $mesasProcesadas = Acta::distinct('mesa_id')->count('mesa_id');
 
         $totalesGeneral = Acta::selectRaw('
-        SUM(nacional) as nacional,
-        SUM(liberal) as liberal,
-        SUM(libre) as libre,
-        SUM(dc) as dc,
-        SUM(pinu) as pinu,
-        SUM(nulos) as nulos,
-        SUM(blancos) as blancos
-    ')->first();
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu,
+            SUM(nulos) as nulos,
+            SUM(blancos) as blancos
+        ')->first();
 
-        $totalesAlcalde = Acta::where('nivel', 'alcalde')
-            ->selectRaw('
+        $totalesAlcalde = Acta::where('nivel', 'alcalde')->selectRaw('
             SUM(nacional) as nacional,
             SUM(liberal) as liberal,
             SUM(libre) as libre,
@@ -301,8 +283,7 @@ class ActaController extends Controller
             SUM(pinu) as pinu
         ')->first();
 
-        $totalesPresidente = Acta::where('nivel', 'presidencial')
-            ->selectRaw('
+        $totalesPresidente = Acta::where('nivel', 'presidencial')->selectRaw('
             SUM(nacional) as nacional,
             SUM(liberal) as liberal,
             SUM(libre) as libre,
@@ -320,43 +301,39 @@ class ActaController extends Controller
 
     public function apiResultados()
     {
-        // ===== TOTALES GENERALES =====
         $totalesGeneral = Acta::selectRaw('
-        SUM(nacional) as nacional,
-        SUM(liberal) as liberal,
-        SUM(libre) as libre,
-        SUM(dc) as dc,
-        SUM(pinu) as pinu,
-        SUM(nulos) as nulos,
-        SUM(blancos) as blancos
-    ')->first();
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu,
+            SUM(nulos) as nulos,
+            SUM(blancos) as blancos
+        ')->first();
 
-        // ===== TOTALES ALCALDE =====
         $totalesAlcalde = Acta::where('nivel', 'alcalde')->selectRaw('
-        SUM(nacional) as nacional,
-        SUM(liberal) as liberal,
-        SUM(libre) as libre,
-        SUM(dc) as dc,
-        SUM(pinu) as pinu
-    ')->first();
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu
+        ')->first();
 
-        // ===== TOTALES PRESIDENTE =====
         $totalesPresidente = Acta::where('nivel', 'presidencial')->selectRaw('
-        SUM(nacional) as nacional,
-        SUM(liberal) as liberal,
-        SUM(libre) as libre,
-        SUM(dc) as dc,
-        SUM(pinu) as pinu
-    ')->first();
+            SUM(nacional) as nacional,
+            SUM(liberal) as liberal,
+            SUM(libre) as libre,
+            SUM(dc) as dc,
+            SUM(pinu) as pinu
+        ')->first();
 
-        // ===== MESAS PROCESADAS =====
         $mesasProcesadas = Acta::distinct('mesa_id')->count('mesa_id');
 
         return response()->json([
             'mesasProcesadas' => $mesasProcesadas,
-            'general' => $totalesGeneral,
-            'alcalde' => $totalesAlcalde,
-            'presidente' => $totalesPresidente
+            'general'         => $totalesGeneral,
+            'alcalde'         => $totalesAlcalde,
+            'presidente'      => $totalesPresidente
         ]);
     }
 }
